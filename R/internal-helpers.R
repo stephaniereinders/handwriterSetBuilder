@@ -19,14 +19,14 @@
   return(clusters)
 }
 
-#' Add Columns to a CSAFE Prompt Dataframe
+#' Add Columns to a CSAFE Prompt Data Frame
 #'
 #' Add writer, session, prompt, and rep columns to a CSAFE Cluster Fill Counts
-#' (CFC) or Cluster Fill Rates (CFR) dataframe. This function drops the doc
+#' (CFC) or Cluster Fill Rates (CFR) data frame. This function drops the doc
 #' column if it is present.
 #'
-#' @param df A CSAFE CFC or CFR dataframe
-#' @returns An updated dataframe
+#' @param df A CSAFE CFC or CFR data frame
+#' @returns An updated data frame
 #' @noRd
 .add_csafe_prompt_columns <- function(df) {
   # Drop writer and doc columns if they already exist. The writer column will be
@@ -57,14 +57,14 @@
 }
 
 
-#' Add Columns to a CVL Prompt Dataframe
+#' Add Columns to a CVL Prompt Data Frame
 #'
 #' Add writer and prompt columns to a CVL prompt Cluster Fill Counts
-#' (CFC) or Cluster Fill Rates (CFR) dataframe. This function drops the doc
+#' (CFC) or Cluster Fill Rates (CFR) data frame. This function drops the doc
 #' column if it is present.
 #'
-#' @param df A CVL prompt CFC or CFR dataframe
-#' @returns An updated dataframe
+#' @param df A CVL prompt CFC or CFR data frame
+#' @returns An updated data frame
 #' @noRd
 .add_cvl_prompt_columns <- function(df) {
   # Drop writer and doc columns if they already exist. The writer column will be
@@ -93,14 +93,14 @@
   return(df)
 }
 
-#' Add Columns to a CVL Line Dataframe
+#' Add Columns to a CVL Line Data Frame
 #'
 #' Add writer, prompt, and line columns to a CVL line Cluster Fill Counts
-#' (CFC) or Cluster Fill Rates (CFR) dataframe. This function drops the doc
+#' (CFC) or Cluster Fill Rates (CFR) data frame. This function drops the doc
 #' column if it is present.
 #'
-#' @param df A CVL line CFC or CFR dataframe
-#' @returns An updated dataframe
+#' @param df A CVL line CFC or CFR data frame
+#' @returns An updated data frame
 #' @noRd
 .add_cvl_line_columns <- function(df) {
   # Drop writer and doc columns if they already exist. The writer column will be
@@ -133,4 +133,3 @@
 
   return(df)
 }
-
