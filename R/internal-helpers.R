@@ -1,0 +1,136 @@
+.get_cluster_rds <- function(main_dir, writer_subdirs = TRUE, drop_all_clusters = TRUE) {
+  if (writer_subdirs) {
+    writers <- list.files(main_dir, full.names = TRUE)
+    files <- unlist(lapply(writers, function(w) list.files(w, full.names = TRUE)))
+  } else {
+    files <- list.files(main_dir, full.names = TRUE)
+  }
+
+  if (drop_all_clusters) {
+    files <- files[!(basename(files) == "all_clusters.rds")]
+  }
+
+  return(files)
+}
+
+.load_cluster_rds <- function(paths) {
+  clusters <- lapply(paths, readRDS)
+  clusters <- do.call(rbind, clusters)
+  return(clusters)
+}
+
+#' Add Columns to a CSAFE Prompt Dataframe
+#'
+#' Add writer, session, prompt, and rep columns to a CSAFE Cluster Fill Counts
+#' (CFC) or Cluster Fill Rates (CFR) dataframe. This function drops the doc
+#' column if it is present.
+#'
+#' @param df A CSAFE CFC or CFR dataframe
+#' @returns An updated dataframe
+#' @noRd
+.add_csafe_prompt_columns <- function(df) {
+  # Drop writer and doc columns if they already exist. The writer column will be
+  # added back in the next step when the docname columns is separated into
+  # multiple columns.
+  df <- df %>%
+    dplyr::ungroup() %>%
+    dplyr::select(-tidyselect::any_of(c("writer", "doc")))
+
+  df <- df %>%
+    tidyr::separate_wider_delim(tidyselect::all_of(c("docname")),
+                                delim = "_",
+                                names = c(
+                                  "writer",
+                                  "prompt",
+                                  "session",
+                                  "rep"
+                                ),
+                                cols_remove = FALSE
+    )
+
+  df <- df %>%
+    dplyr::select(
+      tidyselect::any_of(c("docname", "writer", "session", "prompt", "rep")),
+      tidyselect::everything())
+
+  return(df)
+}
+
+
+#' Add Columns to a CVL Prompt Dataframe
+#'
+#' Add writer and prompt columns to a CVL prompt Cluster Fill Counts
+#' (CFC) or Cluster Fill Rates (CFR) dataframe. This function drops the doc
+#' column if it is present.
+#'
+#' @param df A CVL prompt CFC or CFR dataframe
+#' @returns An updated dataframe
+#' @noRd
+.add_cvl_prompt_columns <- function(df) {
+  # Drop writer and doc columns if they already exist. The writer column will be
+  # added back in the next step when the docname columns is separated into
+  # multiple columns.
+  df <- df %>%
+    dplyr::ungroup() %>%
+    dplyr::select(-tidyselect::any_of(c("writer", "doc")))
+
+  df <- df %>%
+    tidyr::separate_wider_delim(tidyselect::all_of(c("docname")),
+                                delim = "-",
+                                names = c(
+                                  "writer",
+                                  "prompt"
+                                ),
+                                too_many = "drop",
+                                cols_remove = FALSE
+    )
+
+  df <- df %>%
+    dplyr::select(
+      tidyselect::any_of(c("docname", "writer", "prompt")),
+      tidyselect::everything())
+
+  return(df)
+}
+
+#' Add Columns to a CVL Line Dataframe
+#'
+#' Add writer, prompt, and line columns to a CVL line Cluster Fill Counts
+#' (CFC) or Cluster Fill Rates (CFR) dataframe. This function drops the doc
+#' column if it is present.
+#'
+#' @param df A CVL line CFC or CFR dataframe
+#' @returns An updated dataframe
+#' @noRd
+.add_cvl_line_columns <- function(df) {
+  # Drop writer and doc columns if they already exist. The writer column will be
+  # added back in the next step when the docname columns is separated into
+  # multiple columns.
+  df <- df %>%
+    dplyr::ungroup() %>%
+    dplyr::select(-tidyselect::any_of(c("writer", "doc")))
+
+  df <- df %>%
+    tidyr::separate_wider_delim(tidyselect::all_of(c("docname")),
+                                delim = "-",
+                                names = c(
+                                  "writer",
+                                  "prompt",
+                                  "line"
+                                ),
+                                too_many = "drop",
+                                cols_remove = FALSE
+    )
+
+  # Drop file extension from line
+  df$line <- stringr::str_replace(df$line, ".rds", "")
+  df$line <- stringr::str_replace(df$line, ".png", "")
+
+  df <- df %>%
+    dplyr::select(
+      tidyselect::any_of(c("docname", "writer", "prompt", "line")),
+      tidyselect::everything())
+
+  return(df)
+}
+
