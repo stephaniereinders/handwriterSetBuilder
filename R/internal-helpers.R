@@ -41,8 +41,8 @@
                                 delim = "_",
                                 names = c(
                                   "writer",
-                                  "prompt",
                                   "session",
+                                  "prompt",
                                   "rep"
                                 ),
                                 cols_remove = FALSE
