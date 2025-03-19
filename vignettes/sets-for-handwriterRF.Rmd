@@ -1,0 +1,83 @@
+---
+title: "Sets for handwriterRF"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{sets-for-handwriterRF}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup}
+library(handwriterSetBuilder)
+```
+
+## Preparing the Data
+
+### CSAFE Prompt Data
+
+1.  Get cluster fill rates
+    1.  Load cluster assignments from RDS file
+    2.  handwriter::get_cluster_fill_rates()
+2.  Get writer ID, prompt, session, and rep from docname (internal helpers)
+3.  Make master data frame of cluster fill rates with added columns for writer ID, prompt, session, and rep
+
+### CVL Prompt Data
+
+1.  Get cluster fill rates
+    1.  Load cluster assignments from RDS file
+    2.  handwriter::get_cluster_fill_rates()
+2.  Get writer ID and prompt from docname (internal helpers)
+3.  Make master data frame of cluster fill rates with added columns for writer ID and prompt
+
+### CVL Line Data
+
+1.  Get cluster fill rates
+    1.  Load cluster assignments from RDS file
+    2.  handwriter::get_cluster_fill_rates()
+2.  Get writer ID, prompt, and line from docname (internal helpers)
+3.  Make master data frame of cluster fill rates with added columns for writer ID, prompt, and line
+
+## Building Sets
+
+### CSAFE Prompt Data
+
+1.  **CSAFE Training Set**
+    1.  Select i writers
+    2.  Short prompts - randomly select 2 PHR from each writer
+    3.  Long prompts - randomly select 1 LND and 1 WOZ from each writer
+2.  **CSAFE Validation Set**
+    1.  Select i writers
+    2.  Short prompts - randomly select 2 PHR from each writer
+    3.  Long prompts - randomly select 1 LND and 1 WOZ from each writer
+3.  **CSAFE Test Set**
+    1.  Select i writers
+    2.  Short prompts - randomly select 2 PHR from each writer
+    3.  Long prompts - randomly select 1 LND and 1 WOZ from each writer
+
+### CVL Prompt and Line Data
+
+1.  **CVL Training Set**
+    1.  Select r writers (but not the 27 writers who wrote prompts 7 and 8)
+    2.  Drop the German language prompts
+    3.  Randomly pick 4 prompts
+        1.  Short prompts - randomly pick x lines from the first 2 selected prompts
+        2.  Long prompts - use the remaining 2 selected prompts
+2.  **CVL Validation Set**
+    1.  Select s writers (but not the 27 writers who wrote prompts 7 and 8)
+    2.  Drop the German language prompts
+    3.  Randomly pick 4 prompts
+        1.  Short prompts - randomly pick x lines from the first 2 selected prompts
+        2.  Long prompts - use the remaining 2 selected prompts
+3.  **CVL Test Set**
+    1.  Select the remaining writers, including the 27 writers who wrote prompts 7 and 8
+    2.  Drop the German language prompts
+    3.  Randomly pick 4 prompts
+        1.  Short prompts - randomly pick x lines from the first 2 selected prompts
+        2.  Long prompts - use the remaining 2 selected prompts
