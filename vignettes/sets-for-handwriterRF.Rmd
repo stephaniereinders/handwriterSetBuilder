@@ -27,6 +27,7 @@ library(handwriterSetBuilder)
     2.  handwriter::get_cluster_fill_rates()
 2.  Get writer ID, prompt, session, and rep from docname (internal helpers)
 3.  Make master data frame of cluster fill rates with added columns for writer ID, prompt, session, and rep
+4. Save as csafe_prompt_cfr data object
 
 ### CVL Prompt Data
 
@@ -35,6 +36,7 @@ library(handwriterSetBuilder)
     2.  handwriter::get_cluster_fill_rates()
 2.  Get writer ID and prompt from docname (internal helpers)
 3.  Make master data frame of cluster fill rates with added columns for writer ID and prompt
+4. Save as cvl_prompt_cfr data object
 
 ### CVL Line Data
 
@@ -43,6 +45,7 @@ library(handwriterSetBuilder)
     2.  handwriter::get_cluster_fill_rates()
 2.  Get writer ID, prompt, and line from docname (internal helpers)
 3.  Make master data frame of cluster fill rates with added columns for writer ID, prompt, and line
+4. Save as cvl_line_cfc data object
 
 ## Building Sets
 
