@@ -133,3 +133,27 @@
 
   return(df)
 }
+
+#' Drop File Extension from Docname
+#'
+#' Drop the file extension from the docnames in a data frame.
+#'
+#' @param df A data frame with a docname column
+#' @returns A data frame
+#' @noRd
+.drop_file_extension <- function(df) {
+  df$docname <- stringr::str_replace(df$docname, ".png", "")
+  return(df)
+}
+
+#' Drop Cropped from Docname
+#'
+#' Drop "-cropped" from the docnames in a data frame.
+#'
+#' @param df A data frame with a docname column
+#' @returns A data frame
+#' @noRd
+.drop_cropped <- function(df) {
+  df$docname <- stringr::str_replace(df$docname, "-cropped", "")
+  return(df)
+}
