@@ -157,3 +157,8 @@
   df$docname <- stringr::str_replace(df$docname, "-cropped", "")
   return(df)
 }
+
+.get_cluster_cols <- function(df) {
+  clusters <- colnames(df)[grepl("[0-9]|cluster[0-9]", colnames(df))]
+  return(clusters)
+}
