@@ -21,7 +21,7 @@ A data frame
 }
 \description{
 Randomly select CSAFE handwriting documents from a data frame.
-`select_csafe_docs` filters the data frame for the specified writer IDs and
+\code{select_csafe_docs} filters the data frame for the specified writer IDs and
 prompts. Then, the function randomly selects the specified number of
 documents per writer and prompt.
 }
@@ -32,4 +32,5 @@ csafe <- select_csafe_docs(
   prompts = "pPHR",
   num = 2
 )
+
 }

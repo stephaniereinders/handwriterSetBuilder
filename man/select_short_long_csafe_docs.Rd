@@ -40,4 +40,5 @@ csafe_train <- select_short_long_csafe_docs(
   num_short = 2,
   num_long = 1
 )
+
 }
