@@ -76,10 +76,8 @@ params$downsample_diff_ref_pairs <- TRUE
 
 seed <- 0
 
-# Make models with 1, 2, 3, and 4 line pseudo-docs. Train 5 models for each
+# Make models with 1, 2, and 3 line pseudo-docs. Train 5 models for each
 # length of pseudo-docs.
-
-
 for (j in 1:3) { # number of lines
   # set number of lines
   params$cvl_num_lines <- j
@@ -91,13 +89,13 @@ for (j in 1:3) { # number of lines
     params$output_dir <- paste0("experiments/models/long_v_lines/", j, "lines")
   }
 
-  for (i in 1:5) {  # repetitions
+  for (k in 1:5) {  # repetitions
 
-    params$model_name <- paste0("model", i, ".rds")
+    params$model_name <- paste0("model", k, ".rds")
     params$seed <- seed
 
     temp_model <- train_model(params)
-    message(paste("Trained model: rep", i, "for", j, "line(s)"))
+    message(paste("Trained model: rep", k, "for", j, "line(s)"))
 
     seed <- seed + 100
   }

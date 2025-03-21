@@ -2,6 +2,7 @@ devtools::load_all()
 
 make_test_set <- function(params) {
   set.seed(params$seed)
+
   test <- make_csafe_cvl_set(
     all_writers = params$test_writers,
     csafe_long_prompts = params$csafe_long_prompts,
@@ -26,16 +27,35 @@ make_test_set <- function(params) {
 
 
 params <- list()
-params$test_name <- "long_v_1line_noGerman.rds"
-params$output_dir <- "experiments/test_sets"
 params$test_writers <- unique(handwriterRF::test$writer)
 params$csafe_long_prompts <- c("pLND", "pWOZ")
 params$csafe_num_long <- 1
 params$csafe_num_short <- 2
 params$cvl_num_long <- 2
 params$cvl_num_short <- 2
-params$cvl_num_lines <- 1
 params$cvl_drop_German_prompt_test <- TRUE
-params$seed <- 100
 
-test <- make_test_set(params)
+
+# Make test sets with 1, 2, and 3 line pseudo-docs.
+params$seed <- 0
+for (j in 1:3) {  # number of lines
+  # set number of lines
+  params$cvl_num_lines <- j
+
+  # set output directory
+  if (j == 1) {
+    params$output_dir <- "experiments/test_sets/long_v_lines_noGerman/1line"
+  } else {
+    params$output_dir <- paste0("experiments/test_sets/long_v_lines_noGerman/", j, "lines")
+  }
+
+  for (k in 1:5) {  # repetitions
+    params$test_name <- paste0("test", k, ".rds")
+
+    temp_test <- make_test_set(params)
+    message(paste("Made test set: rep", k, "for", j, "line(s)"))
+
+    params$seed <- params$seed + 100
+  }
+}
+
