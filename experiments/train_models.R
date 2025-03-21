@@ -49,6 +49,14 @@ train_model <- function(params) {
     downsample_diff_pairs = params$downsample_diff_ref_pairs
   )
 
+  # Add params ----
+
+  model$params <- params
+
+  # Save ----
+
+  saveRDS(model, file.path(params$output_dir, params$model_name))
+
   return(model)
 }
 
@@ -61,12 +69,37 @@ params$csafe_num_long <- 1
 params$csafe_num_short <- 2
 params$cvl_num_long <- 2
 params$cvl_num_short <- 2
-params$cvl_num_lines <- 1
 params$cvl_drop_German_prompt_train <- TRUE
 params$cvl_drop_German_prompt_validation <- TRUE
 params$distance_measures <- c("abs", "euc")
 params$downsample_diff_ref_pairs <- TRUE
-params$seed <- 100
 
-model <- train_model(params)
-saveRDS(model, "experiments/new_models/model_1line_v_long.rds")
+seed <- 0
+
+# Make models with 1, 2, 3, and 4 line pseudo-docs. Train 5 models for each
+# length of pseudo-docs.
+
+
+for (j in 1:3) { # number of lines
+  # set number of lines
+  params$cvl_num_lines <- j
+
+  # set output directory
+  if (j == 1) {
+    params$output_dir <- "experiments/models/long_v_lines/1line"
+  } else {
+    params$output_dir <- paste0("experiments/models/long_v_lines/", j, "lines")
+  }
+
+  for (i in 1:5) {  # repetitions
+
+    params$model_name <- paste0("model", i, ".rds")
+    params$seed <- seed
+
+    temp_model <- train_model(params)
+    message(paste("Trained model: rep", i, "for", j, "line(s)"))
+
+    seed <- seed + 100
+  }
+}
+
