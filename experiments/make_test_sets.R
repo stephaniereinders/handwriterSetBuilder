@@ -36,21 +36,22 @@ params$cvl_num_short <- 2
 params$cvl_drop_German_prompt_test <- TRUE
 
 
-# Make test sets with 1, 2, and 3 line pseudo-docs.
-params$seed <- 0
-for (j in 1:3) {  # number of lines
+# Make test sets with 1, 2, 3, 4, and 5 line pseudo-docs.
+params$seed <- 100
+for (j in 1:5) {  # number of lines
   # set number of lines
   params$cvl_num_lines <- j
 
   # set output directory
-  if (j == 1) {
-    params$output_dir <- "experiments/test_sets/long_v_lines_noGerman/1line"
-  } else {
-    params$output_dir <- paste0("experiments/test_sets/long_v_lines_noGerman/", j, "lines")
-  }
+  params$output_dir <- "experiments/test_sets/long_v_lines_noGerman"
 
   for (k in 1:5) {  # repetitions
-    params$test_name <- paste0("test", k, ".rds")
+
+    if (j == 1) {
+      params$test_name <- paste0(j, "line_test_set", k, ".rds")
+    } else {
+      params$test_name <- paste0(j, "lines_test_set", k, ".rds")
+    }
 
     temp_test <- make_test_set(params)
     message(paste("Made test set: rep", k, "for", j, "line(s)"))
