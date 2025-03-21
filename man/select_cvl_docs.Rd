@@ -5,17 +5,14 @@
 \title{Select CVL Documents}
 \usage{
 select_cvl_docs(
-  df = cvl_prompt_cfr,
   writers,
   num,
   drop_German_prompt = TRUE,
-  drop_writers_missing_docs = TRUE
+  drop_writers_missing_docs = TRUE,
+  drop_extra_columns = TRUE
 )
 }
 \arguments{
-\item{df}{A data frame of CSAFE handwriting documents. The data frame must
-contain writer and prompt columns}
-
 \item{writers}{A vector of CSAFE writer IDs}
 
 \item{num}{Number of documents to sample per writer}
@@ -27,19 +24,22 @@ prompts. If FALSE, the German prompt could be randomly selected.}
 \item{drop_writers_missing_docs}{TRUE or FALSE. Some writers might not have
 \code{num} prompts to select. If TRUE, these writers will be dropped from the
 data frame. If FALSE, these writers will be included in the data frame.}
+
+\item{drop_extra_columns}{TRUE or FALSE. If TRUE, will keep the docname,
+writer and cluster columns and drop all other columns. If FALSE, will keep
+all columns.}
 }
 \value{
 A data frame
 }
 \description{
-Randomly select CVL handwriting documents from a data frame.
+Randomly select CVL handwriting documents from the cvl_prompt_cfr data frame.
 \code{select_cvl_docs} filters the data frame for the specified writer IDs. Then,
 the function randomly selects the specified number of documents per writer
 and prompt.
 }
 \examples{
 cvl <- select_cvl_docs(
-  df = cvl_prompt_cfr,
   writers = unique(handwriterRF::train$writer),
   num = 2
 )

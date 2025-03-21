@@ -4,13 +4,17 @@
 \alias{make_pseudo_docs}
 \title{Make Pseudo Documents from Lines from CVL Documents}
 \usage{
-make_pseudo_docs(lines_df)
+make_pseudo_docs(lines_df, output = "counts")
 }
 \arguments{
-\item{lines_df}{A data frame of writer profiles for lines from CVL documents}
+\item{lines_df}{A data frame of cluster fill counts for lines from CVL
+documents}
+
+\item{output}{Either "counts" to return cluster fill counts or "rates" to
+retun cluster fill rates}
 }
 \value{
-A data frame
+A data frame of cluster fill counts or cluster fill rates
 }
 \description{
 Make pseudo documents from a data frame of writer profiles for lines from CVL
@@ -20,9 +24,9 @@ document.
 \examples{
 cvl <- select_cvl_lines(
   docnames = c("0001-1", "0003-2", "0005-3"),
-  lines_df = cvl_line_cfc,
   num_lines = 2
 )
-docs <- make_pseudo_docs(cvl)
+counts <- make_pseudo_docs(cvl)
+rates <- make_pseudo_docs(cvl, output = "rates")
 
 }

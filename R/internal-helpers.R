@@ -158,7 +158,66 @@
   return(df)
 }
 
+#' Drop Extra Label Columns from Data Frame
+#'
+#' Keep the docname and cluster columns in a cluster fill counts or cluster fill
+#' rates data frame and drop all other columns.
+#'
+#' @param df A cluster fill counts or cluster fill rates data frame
+#' @returns A data frame
+#' @noRd
+.drop_extra_labels <- function(df) {
+  clusters <- df[.get_cluster_cols(df)]
+  keep_labels <- df %>%
+    dplyr::select(tidyselect::any_of(c("docname", "writer", "total_graphs")))
+  df <- cbind(keep_labels, clusters)
+  return(df)
+}
+
+#' Get Names of Cluster Columns in a Data Frame
+#'
+#' Writer profile data frames (cluster fill counts and cluster fill rates)
+#' contain a column for each cluster. The cluster columns are either named "1",
+#' "2", ..., "40", in the case of cluster fill counts, or "cluster1",
+#' "cluster2", ..., "cluster40", in the case of cluster fill rates.
+#' [`get_cluster_cols()`] creates a vector of the cluster column names.
+#'
+#' @param df A data frame of cluster fill counts or cluster fill rates
+#' @returns A vector
+#' @noRd
 .get_cluster_cols <- function(df) {
   clusters <- colnames(df)[grepl("[0-9]|cluster[0-9]", colnames(df))]
   return(clusters)
 }
+
+#' Get Names of Label Columns in a Data Frame
+#'
+#' Writer profile data frames (cluster fill counts and cluster fill rates)
+#' contain a column for each cluster. The cluster columns are either named "1",
+#' "2", ..., "40", in the case of cluster fill counts, or "cluster1",
+#' "cluster2", ..., "cluster40", in the case of cluster fill rates.
+#' [`get_label_cols()`] creates a vector of ALL column names EXCEPT the cluster
+#' column names.
+#'
+#' @param df A data frame of cluster fill counts or cluster fill rates
+#' @returns A vector
+#' @noRd
+.get_label_cols <- function(df) {
+  clusters <- colnames(df)[!grepl("[0-9]|cluster[0-9]", colnames(df))]
+  return(clusters)
+}
+
+#' Get the Total Number of Graphs per Document
+#'
+#' Get the total number of graphs for each document in a cluster fill counts
+#' data frame.
+#'
+#' @param df A data frame of cluster fill counts
+#' @returns A vector
+#' @noRd
+.get_total_graphs <- function(df) {
+  clusters <- .get_cluster_cols(df)
+  total_graphs <- rowSums(df[clusters])
+  return(total_graphs)
+}
+

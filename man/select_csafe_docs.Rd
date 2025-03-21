@@ -4,33 +4,34 @@
 \alias{select_csafe_docs}
 \title{Select CSAFE Documents}
 \usage{
-select_csafe_docs(df = csafe_prompt_cfr, writers, prompts, num)
+select_csafe_docs(writers, prompts, num, drop_extra_columns = TRUE)
 }
 \arguments{
-\item{df}{A data frame of CSAFE handwriting documents. The data frame must
-contain writer and prompt columns}
-
 \item{writers}{A vector of CSAFE writer IDs}
 
 \item{prompts}{A vector of CSAFE prompt codes c("pLND", "pPHR", "pWOZ")}
 
 \item{num}{Number of documents to sample per writer and prompt code}
+
+\item{drop_extra_columns}{TRUE or FALSE. If TRUE, will keep the docname,
+writer and cluster columns and drop all other columns. If FALSE, will keep
+all columns.}
 }
 \value{
 A data frame
 }
 \description{
-Randomly select CSAFE handwriting documents from a data frame.
-\code{select_csafe_docs} filters the data frame for the specified writer IDs and
-prompts. Then, the function randomly selects the specified number of
+Randomly select CSAFE handwriting documents from the csafe_prompt_cfr data
+frame. \code{select_csafe_docs} filters the data frame for the specified writer
+IDs and prompts. Then, the function randomly selects the specified number of
 documents per writer and prompt.
 }
 \examples{
 csafe <- select_csafe_docs(
-  df = csafe_prompt_cfr,
   writers = unique(handwriterRF::train$writer),
   prompts = "pPHR",
-  num = 2
+  num = 2,
+  drop_extra_columns = FALSE
 )
 
 }

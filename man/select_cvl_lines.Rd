@@ -4,12 +4,10 @@
 \alias{select_cvl_lines}
 \title{Select Lines from CVL Documents}
 \usage{
-select_cvl_lines(docnames, lines_df = cvl_line_cfc, num_lines)
+select_cvl_lines(docnames, num_lines)
 }
 \arguments{
 \item{docnames}{A vector of CVL document names}
-
-\item{lines_df}{A data frame of lines from CVL documents}
 
 \item{num_lines}{Number of lines to sample per document}
 }
@@ -17,14 +15,13 @@ select_cvl_lines(docnames, lines_df = cvl_line_cfc, num_lines)
 A data frame
 }
 \description{
-Randomly select lines from CVL handwriting documents in a data frame.
-\code{select_cvl_lines} filters the data frame for the document names. Then,
+Randomly select lines from CVL handwriting documents in cvl_line_cfc.
+\code{select_cvl_lines} filters the data frame for the input document names. Then,
 the function randomly selects the specified number of lines per document.
 }
 \examples{
 cvl <- select_cvl_lines(
   docnames = c("0001-1", "0003-2", "0005-3"),
-  lines_df = cvl_line_cfc,
   num_lines = 2
 )
 
