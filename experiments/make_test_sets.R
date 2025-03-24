@@ -20,7 +20,7 @@ make_test_set <- function(params) {
 
   # Save
 
-  saveRDS(test, file.path(params$output_dir, params$test_name))
+  saveRDS(test, file.path(params$output_dir, params$filename))
 
   return(test)
 }
@@ -48,9 +48,9 @@ for (j in 1:5) {  # number of lines
   for (k in 1:5) {  # repetitions
 
     if (j == 1) {
-      params$test_name <- paste0(j, "line_test_set", k, ".rds")
+      params$filename <- paste0(j, "line_test_set", k, ".rds")
     } else {
-      params$test_name <- paste0(j, "lines_test_set", k, ".rds")
+      params$filename <- paste0(j, "lines_test_set", k, ".rds")
     }
 
     temp_test <- make_test_set(params)

@@ -55,7 +55,7 @@ train_model <- function(params) {
 
   # Save ----
 
-  saveRDS(model, file.path(params$output_dir, params$model_name))
+  saveRDS(model, file.path(params$output_dir, params$filename))
 
   return(model)
 }
@@ -82,14 +82,14 @@ for (j in 1:5) { # number of lines
   params$cvl_num_lines <- j
 
   # set output directory
-  params$output_dir <- paste0("experiments/models/long_v_lines")
+  params$output_dir <- paste0("experiments/models/long_v_lines_noGerman")
 
   for (k in 1:5) {  # repetitions
 
     if (j == 1) {
-      params$model_name <- paste0(j, "line_model", k, ".rds")
+      params$filename <- paste0(j, "line_model", k, ".rds")
     } else {
-      params$model_name <- paste0(j, "lines_model", k, ".rds")
+      params$filename <- paste0(j, "lines_model", k, ".rds")
     }
 
     temp_model <- train_model(params)

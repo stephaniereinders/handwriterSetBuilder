@@ -1,17 +1,24 @@
 devtools::load_all()
 
-test_model <- function(params, model = NULL, test = NULL) {
+
+test_model <- function(model_path, test_path, output_dir) {
+
   results <- list()
+  results$params <- list()
 
   # Load model
-  if (is.null(model)) {
-    model <- readRDS(file.path(params$model_dir, params$model_name))
-  }
+  model <- readRDS(model_path)
 
   # Load test
-  if (is.null(test)) {
-    test <- readRDS(file.path(params$test_dir, params$test_name))
-  }
+  test <- readRDS(test_path)
+
+  # Set name of outfile
+  results$params$output_dir <- output_dir
+  results$params$filename <- paste0(
+    stringr::str_replace(model$params$filename, ".rds", ""),
+    "_and_",
+    test$params$filename
+  )
 
   results$slrs <- handwriterRF::compare_writer_profiles(
     writer_profiles = test$long,
@@ -26,28 +33,25 @@ test_model <- function(params, model = NULL, test = NULL) {
 
   # Add params ----
 
-  results$results_params <- params
-
-  if (is.null(model)) {
-    results$model_params <- model$params
-  }
-
-  if (is.null(test)) {
-    results$test_params <- test$params
-  }
+  results$model_params <- model$params
+  results$test_params <- test$params
+  results$test_params$total_graphs_long_docs <- test$params$long$total_graphs
+  results$test_params$total_graphs_short_docs <- test$params$short$total_graphs
 
   # Save
-  saveRDS(results, file.path(params$results_dir, params$results_name))
+  saveRDS(results, file.path(results$params$output_dir, results$params$filename))
 
   return(results)
 }
 
-params <- list()
-params$model_name <- "model1.rds"
-params$model_dir <- "experiments/models/long_v_lines/1line"
-params$test_name <- "long_v_1line_noGerman.rds"
-params$test_dir <- "experiments/test_sets"
-params$results_name <- "results1.rds"
-params$results_dir <- "experiments/results"
+models <- list.files("experiments/models/long_v_lines_noGerman", full.names = TRUE)
+test_sets <- list.files("experiments/test_sets/long_v_lines_noGerman", full.names = TRUE)
+output_dir <- "experiments/results/long_v_lines_noGerman"
 
-results <- test_model(params)
+for (m in models) {
+  for (t in test_sets) {
+    results <- test_model(m, t, output_dir)
+    message(paste("Saved results:", m, "and", t))
+  }
+}
+
