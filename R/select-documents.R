@@ -251,68 +251,75 @@ select_long_short_cvl_docs <- function(
   return(cvl)
 }
 
-#' Select Lines from CVL Documents
-#'
-#' Randomly select lines from CVL handwriting documents in cvl_line_cfc.
-#' `select_cvl_lines` filters the data frame for the input document names. Then,
-#' the function randomly selects the specified number of lines per document.
-#'
-#' @param docnames A vector of CVL document names
-#' @param num_lines Number of lines to sample per document
-#'
-#' @returns A data frame
-#' @export
-#'
-#' @examples
-#' cvl <- select_cvl_lines(
-#'   docnames = c("0001-1", "0003-2", "0005-3"),
-#'   num_lines = 2
-#' )
-#'
-#' @md
-select_cvl_lines <- function(docnames, num_lines) {
-  # Prevent note "no visible binding for global variable"
-  prompt_docname <- group <- NULL
-
-  # FUTURE: could allow users to input a different CVL lines cfc data frame
-  lines_df = cvl_line_cfc
-
-  # Add prompt docname to lines_df data frame
-  lines_df$prompt_docname <- paste(lines_df$writer, lines_df$prompt, sep = "-")
-  lines_df <- lines_df %>% dplyr::select(tidyselect::any_of(c("docname", "prompt_docname", "writer", "prompt", "line")), dplyr::everything())
-
-  lines_df <- lines_df %>% dplyr::filter(prompt_docname %in% docnames)
-
-  lines_df <- lines_df %>%
-    dplyr::group_by(prompt_docname) %>%
-    dplyr::slice_sample(n = num_lines)
-
-  return(lines_df)
-}
 
 #' Make Pseudo Documents from Lines from CVL Documents
 #'
-#' Make pseudo documents from a data frame of writer profiles for lines from CVL
-#' documents. The writer profiles are summed for each writer to make a pseudo
-#' document.
+#' Randomly select lines from CVL handwriting documents in cvl_line_cfc.
+#' `make_pseudo_docs` filters the data frame for the input document names. Then,
+#' the function randomly selects the specified number of lines per document. The
+#' cluster fill counts are summed the selected lines to make a pseudo document.
 #'
-#' @param lines_df A data frame of cluster fill counts for lines from CVL
-#'   documents
+#' @param docnames A vector of CVL document names
+#' @param num_lines Number of lines to sample per document
+#' @param drop_writers TRUE or FALSE. If TRUE, writers with fewer than num_lines
+#'   will be dropped. If FALSE, all writers will be included.
 #' @param output Either "counts" to return cluster fill counts or "rates" to
 #'   retun cluster fill rates
+#' @param output_line_nums TRUE or FALSE. If TRUE, a column will be added to the
+#'   output data frame that lists the line numbers of the lines used to create
+#'   the pseudo-documents.
 #' @returns A data frame of cluster fill counts or cluster fill rates
 #' @export
 #'
 #' @examples
-#' cvl <- select_cvl_lines(
+#' counts <- make_pseudo_docs(docnames = c("0001-1", "0003-2", "0005-3"), num_lines = 2)
+#'
+#' rates <- make_pseudo_docs(docnames = c("0001-1", "0003-2", "0005-3"), num_lines = 2, output = "rates")
+#'
+#' rates_w_lines <- make_pseudo_docs(
 #'   docnames = c("0001-1", "0003-2", "0005-3"),
-#'   num_lines = 2
+#'   num_lines = 2,
+#'   output = "rates",
+#'   output_line_nums = TRUE
 #' )
-#' counts <- make_pseudo_docs(cvl)
-#' rates <- make_pseudo_docs(cvl, output = "rates")
 #'
 #' @md
-make_pseudo_docs <- function(lines_df, output = "counts") {
+make_pseudo_docs <- function(docnames,
+                             num_lines,
+                             drop_writers = TRUE,
+                             output = "counts",
+                             output_line_nums = FALSE) {
+
+  .select_cvl_lines <- function(docnames, num_lines, drop_writers) {
+    # Prevent note "no visible binding for global variable"
+    prompt_docname <- group <- NULL
+
+    # FUTURE: could allow users to input a different CVL lines cfc data frame
+    lines_df = cvl_line_cfc
+
+    # Add prompt docname to lines_df data frame
+    lines_df$prompt_docname <- paste(lines_df$writer, lines_df$prompt, sep = "-")
+    lines_df <- lines_df %>% dplyr::select(tidyselect::any_of(c("docname", "prompt_docname", "writer", "prompt", "line")), dplyr::everything())
+
+    # Filter by docnames
+    lines_df <- lines_df %>% dplyr::filter(prompt_docname %in% docnames)
+
+    # Select lines
+    lines_df <- lines_df %>%
+      dplyr::group_by(prompt_docname) %>%
+      dplyr::slice_sample(n = num_lines)
+
+    if (drop_writers) {
+      lines_df <- lines_df %>%
+        dplyr::group_by(prompt_docname) %>%
+        dplyr::filter(dplyr::n() >= num_lines)
+    }
+
+    return(lines_df)
+  }
+
+  lines_df <- .select_cvl_lines(docnames = docnames, num_lines = num_lines, drop_writers = drop_writers)
+
   clusters <- .get_cluster_cols(lines_df)
 
   pseudo_docs <- lines_df %>%
@@ -331,6 +338,11 @@ make_pseudo_docs <- function(lines_df, output = "counts") {
   # the corresponding prompts
   pseudo_docs$docname <- paste0(pseudo_docs$docname, "-pseudo")
 
+  if (drop_writers) {
+
+  }
+
+  # Optional. Convert cluster fill counts to cluster fill rates.
   if (output == "rates") {
     labels <- pseudo_docs[.get_label_cols(pseudo_docs)]
     clusters <- pseudo_docs[.get_cluster_cols(pseudo_docs)]
@@ -338,6 +350,21 @@ make_pseudo_docs <- function(lines_df, output = "counts") {
     rates <- clusters / total_graphs
     colnames(rates) <- paste0("cluster", colnames(rates))
     pseudo_docs <- cbind(labels, total_graphs, rates)
+  }
+
+  # Optional. List the line numbers of the lines used for each pseudo-document.
+  if (output_line_nums) {
+    line_nums <- lines_df %>% dplyr::ungroup() %>% dplyr::select(tidyselect::all_of(c("writer", "line")))
+    line_nums <- line_nums %>%
+      dplyr::group_by(writer) %>%
+      dplyr::summarize(line = list(sort(unlist(line)))) %>%
+      dplyr::ungroup()
+
+    # Add line numbers and sort columns
+    pseudo_docs <-
+      pseudo_docs %>% dplyr::left_join(line_nums, by = "writer") %>%
+      dplyr::select(tidyselect::all_of(c("docname", "writer", "prompt", "line", "total_graphs")),
+                    tidyselect::everything())
   }
 
   return(pseudo_docs)
@@ -452,3 +479,5 @@ add_total_graphs_to_results <- function(test_set, results) {
 
   return(results)
 }
+
+

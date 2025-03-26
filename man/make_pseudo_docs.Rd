@@ -4,29 +4,48 @@
 \alias{make_pseudo_docs}
 \title{Make Pseudo Documents from Lines from CVL Documents}
 \usage{
-make_pseudo_docs(lines_df, output = "counts")
+make_pseudo_docs(
+  docnames,
+  num_lines,
+  drop_writers = TRUE,
+  output = "counts",
+  output_line_nums = FALSE
+)
 }
 \arguments{
-\item{lines_df}{A data frame of cluster fill counts for lines from CVL
-documents}
+\item{docnames}{A vector of CVL document names}
+
+\item{num_lines}{Number of lines to sample per document}
+
+\item{drop_writers}{TRUE or FALSE. If TRUE, writers with fewer than num_lines
+will be dropped. If FALSE, all writers will be included.}
 
 \item{output}{Either "counts" to return cluster fill counts or "rates" to
 retun cluster fill rates}
+
+\item{output_line_nums}{TRUE or FALSE. If TRUE, a column will be added to the
+output data frame that lists the line numbers of the lines used to create
+the pseudo-documents.}
 }
 \value{
 A data frame of cluster fill counts or cluster fill rates
 }
 \description{
-Make pseudo documents from a data frame of writer profiles for lines from CVL
-documents. The writer profiles are summed for each writer to make a pseudo
-document.
+Randomly select lines from CVL handwriting documents in cvl_line_cfc.
+\code{make_pseudo_docs} filters the data frame for the input document names. Then,
+the function randomly selects the specified number of lines per document. The
+cluster fill counts are summed the selected lines to make a pseudo document.
 }
 \examples{
-cvl <- select_cvl_lines(
+counts <- make_pseudo_docs(docnames = c("0001-1", "0003-2", "0005-3"), num_lines = 2)
+
+rates <- make_pseudo_docs(docnames = c("0001-1", "0003-2", "0005-3"), num_lines = 2, output = "rates")
+
+rates_w_lines <- make_pseudo_docs(
   docnames = c("0001-1", "0003-2", "0005-3"),
-  num_lines = 2
+  num_lines = 2,
+  output = "rates",
+  output_line_nums = TRUE
 )
-counts <- make_pseudo_docs(cvl)
-rates <- make_pseudo_docs(cvl, output = "rates")
 
 }
