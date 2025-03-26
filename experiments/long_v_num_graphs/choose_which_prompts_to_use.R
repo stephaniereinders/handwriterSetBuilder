@@ -27,7 +27,7 @@ counts %>%
                stat = "identity") +
   labs(x = "CVL Prompt", y = "# Graphs per Document") +
   theme_bw()
-ggsave(filename = "experiments/long_v_num_graphs/plots/num_graphs_per_doc.png")
+ggsave(filename = "experiments/long_v_num_graphs/plots/cvl_num_graphs_per_doc.png")
 
 csafe_counts <- csafe_prompt_cfr %>%
   dplyr::group_by(prompt) %>%
@@ -48,5 +48,5 @@ csafe_counts %>%
                stat = "identity") +
   labs(x = "CSAFE Prompt", y = "# Graphs per Document") +
   theme_bw()
-ggsave(filename = "experiments/long_v_num_graphs/plots/num_graphs_per_doc.png")
+ggsave(filename = "experiments/long_v_num_graphs/plots/csafe_num_graphs_per_doc.png")
 
